@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-pVHsX7WJs1/B4D2I/Dlziuk7cDQydiDeWp++Gs5J22A='; style-src 'sha256-yPBFhf2uktlTWmp2fmbqaV6ZF7qJHnjH6HevUTKEjtc='; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Developer onboarding guide</title>
+<style>
+:root { color-scheme: light dark; --bg: #f7f7f8; --card: #fff; --text: #1d1d1f; --muted: #5f6368; --line: #d9d9de; --accent: #2457c5; --code: #f0f1f4; --warn: #8a5300; --warnbg: #fff4e0; }
+@media (prefers-color-scheme: dark) { :root { --bg: #111214; --card: #1b1c1f; --text: #e8e8ea; --muted: #a0a3a8; --line: #33353a; --accent: #7aa2ff; --code: #26282c; --warn: #ffcc80; --warnbg: #3a2b12; } }
+* { box-sizing: border-box; }
+body { margin: 0; font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); }
+main { max-width: 760px; margin: 0 auto; padding: 32px 20px 64px; }
+h1 { font-size: 1.6rem; margin: 0 0 4px; }
+h2 { font-size: 1.25rem; margin: 0 0 12px; }
+h3 { font-size: 1rem; margin: 18px 0 6px; }
+p { margin: 8px 0; }
+.lead { color: var(--muted); margin-bottom: 24px; }
+.step { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 20px 22px; margin: 16px 0; }
+.count { color: var(--muted); font-size: .85rem; margin-bottom: 4px; }
+.choices { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 4px; }
+.choices label { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; cursor: pointer; }
+.choices input { margin-right: 6px; }
+.cmd { position: relative; margin: 8px 0; }
+pre { margin: 0; background: var(--code); border-radius: 8px; padding: 12px 14px; padding-right: 76px; overflow-x: auto; font: 13.5px/1.5 ui-monospace, SFMono-Regular, Consolas, monospace; white-space: pre; }
+.copy { position: absolute; top: 8px; right: 8px; font: inherit; font-size: .8rem; padding: 3px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--card); color: var(--text); cursor: pointer; }
+.note { background: var(--warnbg); color: var(--warn); border-radius: 8px; padding: 8px 12px; margin: 10px 0; }
+.nav { display: none; gap: 10px; margin-top: 18px; }
+.nav button { font: inherit; padding: 8px 18px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--text); cursor: pointer; }
+.nav .next { background: var(--accent); border-color: var(--accent); color: #fff; margin-left: auto; }
+.nav button:disabled { opacity: .45; cursor: not-allowed; }
+.muted { color: var(--muted); font-size: .9rem; }
+.platform-label { display: inline-block; font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .92em; }
+a { color: var(--accent); }
+.js .nav { display: flex; }
+.js .step { display: none; }
+.js .step.current { display: block; }
+.js .nojs-only { display: none; }
+.js .platform-label { display: none; }
+.js [data-platform].off { display: none; }
+.copy[hidden], .note[hidden], .nav [hidden] { display: none; }
+</style>
+</head>
+<body>
+<main>
+<h1>Developer onboarding guide</h1>
+<p class="lead">Set up Git and Claude Code, OpenAI Codex, or both, one step at a time. This page only shows commands: it does not download or run anything, and it sets no cookies.</p>
+<p class="nojs-only note">JavaScript is off, so every step is shown below. Pick the commands for your system, and replace <code>both</code> with <code>claude</code> or <code>codex</code> to set up just one.</p>
+
+<section class="step" data-step="choose">
+  <div class="count"></div>
+  <h2>Choose your system and coding agent</h2>
+  <p>Your system:</p>
+  <div class="choices">
+    <label><input type="radio" name="platform" value="windows">Windows</label>
+    <label><input type="radio" name="platform" value="macos">macOS</label>
+    <label><input type="radio" name="platform" value="linux">Linux</label>
+  </div>
+  <p>Coding agent:</p>
+  <div class="choices">
+    <label><input type="radio" name="agent" value="claude">Claude Code</label>
+    <label><input type="radio" name="agent" value="codex">Codex</label>
+    <label><input type="radio" name="agent" value="both">Both</label>
+  </div>
+  <p class="muted">The script also installs Git if it is missing. Choose an agent to continue.</p>
+  <div class="nav"><button class="next" type="button">Next</button></div>
+</section>
+
+<section class="step" data-step="download">
+  <div class="count"></div>
+  <h2>Download the script</h2>
+  <div data-platform="windows">
+    <span class="platform-label">Windows</span>
+    <p>Open PowerShell in an empty folder and run:</p>
+    <div class="cmd"><pre data-cmd="windows-download">Invoke-WebRequest -UseBasicParsing https://github.com/realanilkapur/dev-onboarding-openspec/releases/latest/download/onboard.ps1 -OutFile onboard.ps1
+Invoke-WebRequest -UseBasicParsing https://github.com/realanilkapur/dev-onboarding-openspec/releases/latest/download/SHA256SUMS -OutFile SHA256SUMS</pre><button class="copy" type="button" hidden>Copy</button></div>
+  </div>
+  <div data-platform="macos linux">
+    <span class="platform-label">macOS and Linux</span>
+    <p>Open a terminal in an empty folder and run:</p>
+    <div class="cmd"><pre data-cmd="unix-download">curl -fsSLO https://github.com/realanilkapur/dev-onboarding-openspec/releases/latest/download/onboard.sh
+curl -fsSLO https://github.com/realanilkapur/dev-onboarding-openspec/releases/latest/download/SHA256SUMS</pre><button class="copy" type="button" hidden>Copy</button></div>
+  </div>
+  <p class="muted">You can open the script in any text editor and read it before running it.</p>
+  <div class="nav"><button class="back" type="button">Back</button><button class="next" type="button">Next</button></div>
+</section>
+
+<section class="step" data-step="verify">
+  <div class="count"></div>
+  <h2>Check the download</h2>
+  <p>This compares the script with the checksum published with the release.</p>
+  <div data-platform="windows">
+    <span class="platform-label">Windows</span>
+    <div class="cmd"><pre data-cmd="windows-verify">$expected = ((Get-Content SHA256SUMS) -match 'onboard\.ps1$' -split '\s+')[0]
+if ((Get-FileHash onboard.ps1 -Algorithm SHA256).Hash -eq $expected) { 'OK: checksum matches' } else { 'STOP: checksum does not match' }</pre><button class="copy" type="button" hidden>Copy</button></div>
+    <p>You should see <code>OK: checksum matches</code>. If you see <code>STOP</code>, delete the file and download it again.</p>
+  </div>
+  <div data-platform="macos">
+    <span class="platform-label">macOS</span>
+    <div class="cmd"><pre data-cmd="macos-verify">grep ' onboard.sh$' SHA256SUMS | shasum -a 256 -c -</pre><button class="copy" type="button" hidden>Copy</button></div>
+  </div>
+  <div data-platform="linux">
+    <span class="platform-label">Linux</span>
+    <div class="cmd"><pre data-cmd="linux-verify">grep ' onboard.sh$' SHA256SUMS | sha256sum -c -</pre><button class="copy" type="button" hidden>Copy</button></div>
+  </div>
+  <p data-platform="macos linux">You should see <code>onboard.sh: OK</code>. If not, delete the file and download it again.</p>
+  <div class="nav"><button class="back" type="button">Back</button><button class="skip" type="button">Skip</button><button class="next" type="button">Next</button></div>
+</section>
+
+<section class="step" data-step="preview">
+  <div class="count"></div>
+  <h2>Preview what will change</h2>
+  <p class="note unchecked" hidden>You skipped the checksum check, so this download was not checked.</p>
+  <p>The preview lists what is already installed and what the script would change. It changes nothing.</p>
+  <div data-platform="windows">
+    <span class="platform-label">Windows</span>
+    <div class="cmd"><pre data-cmd="windows-preview">powershell -NoProfile -ExecutionPolicy Bypass -File .\onboard.ps1 -Agent <span class="agent">both</span> -WhatIf</pre><button class="copy" type="button" hidden>Copy</button></div>
+  </div>
+  <div data-platform="macos linux">
+    <span class="platform-label">macOS and Linux</span>
+    <div class="cmd"><pre data-cmd="unix-preview">bash onboard.sh --agent <span class="agent">both</span> --dry-run</pre><button class="copy" type="button" hidden>Copy</button></div>
+  </div>
+  <div class="nav"><button class="back" type="button">Back</button><button class="skip" type="button">Skip</button><button class="next" type="button">Next</button></div>
+</section>
+
+<section class="step" data-step="run">
+  <div class="count"></div>
+  <h2>Run the setup</h2>
+  <p class="note unchecked" hidden>You skipped the checksum check, so this download was not checked.</p>
+  <div data-platform="windows">
+    <span class="platform-label">Windows</span>
+    <div class="cmd"><pre data-cmd="windows-run">powershell -NoProfile -ExecutionPolicy Bypass -File .\onboard.ps1 -Agent <span class="agent">both</span></pre><button class="copy" type="button" hidden>Copy</button></div>
+    <p class="muted">Installs for your user account with winget. It never asks for administrator rights.</p>
+  </div>
+  <div data-platform="macos linux">
+    <span class="platform-label">macOS and Linux</span>
+    <div class="cmd"><pre data-cmd="unix-run">bash onboard.sh --agent <span class="agent">both</span></pre><button class="copy" type="button" hidden>Copy</button></div>
+    <p class="muted" data-platform="linux">Installing packages on Linux needs sudo. The script shows each sudo command and runs it only after you type <code>YES</code>.</p>
+  </div>
+  <p>The script shows its plan, then stops before each step that changes something and shows what it found and what it will do:</p>
+  <ul>
+    <li>Press <strong>Enter</strong> to run the step.</li>
+    <li>Type <strong>S</strong> to skip it. Steps that need it are skipped too.</li>
+    <li>Type <strong>Q</strong> to stop. Nothing after that point changes.</li>
+  </ul>
+  <p class="muted">Steps that are already done are listed without stopping. Running the same command again offers anything you skipped.</p>
+  <div class="nav"><button class="back" type="button">Back</button><button class="next" type="button">Next</button></div>
+</section>
+
+<section class="step" data-step="signin">
+  <div class="count"></div>
+  <h2>Open a new terminal and sign in</h2>
+  <p>Open a new terminal window so it picks up the updated PATH, then run:</p>
+  <div data-agent="claude both">
+    <div class="cmd"><pre data-cmd="signin-claude">claude</pre><button class="copy" type="button" hidden>Copy</button></div>
+  </div>
+  <div data-agent="codex both">
+    <div class="cmd"><pre data-cmd="signin-codex">codex</pre><button class="copy" type="button" hidden>Copy</button></div>
+  </div>
+  <p class="muted">Each tool asks you to sign in the first time. The setup script never asks for or stores API keys.</p>
+  <div class="nav"><button class="back" type="button">Back</button></div>
+</section>
+
+<p class="muted">Source, release notes, and the full README: <a href="https://github.com/realanilkapur/dev-onboarding-openspec">github.com/realanilkapur/dev-onboarding-openspec</a></p>
+</main>
+<script>
+(function () {
+  var steps = Array.prototype.slice.call(document.querySelectorAll('.step'));
+  var current = 0;
+  var skippedVerify = false;
+  document.body.classList.add('js');
+
+  function detectPlatform() {
+    var p = ((navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || navigator.userAgent || '').toLowerCase();
+    if (p.indexOf('win') !== -1) { return 'windows'; }
+    if (p.indexOf('mac') !== -1 || p.indexOf('iphone') !== -1 || p.indexOf('ipad') !== -1) { return 'macos'; }
+    return 'linux';
+  }
+
+  function selected(name) {
+    var el = document.querySelector('input[name="' + name + '"]:checked');
+    return el ? el.value : null;
+  }
+
+  function matches(list, value) {
+    return (' ' + list + ' ').indexOf(' ' + value + ' ') !== -1;
+  }
+
+  function render() {
+    var platform = selected('platform');
+    var agent = selected('agent');
+    steps.forEach(function (s, i) {
+      s.classList.toggle('current', i === current);
+      s.querySelector('.count').textContent = 'Step ' + (i + 1) + ' of ' + steps.length;
+    });
+    document.querySelectorAll('[data-platform]').forEach(function (el) {
+      el.classList.toggle('off', !matches(el.getAttribute('data-platform'), platform));
+    });
+    document.querySelectorAll('[data-agent]').forEach(function (el) {
+      el.hidden = !agent || !matches(el.getAttribute('data-agent'), agent);
+    });
+    document.querySelectorAll('.agent').forEach(function (el) { el.textContent = agent || 'both'; });
+    document.querySelectorAll('.unchecked').forEach(function (el) { el.hidden = !skippedVerify; });
+    steps[0].querySelector('.next').disabled = !agent;
+  }
+
+  function go(delta) {
+    current = Math.max(0, Math.min(steps.length - 1, current + delta));
+    render();
+    window.scrollTo(0, 0);
+  }
+
+  steps.forEach(function (s) {
+    var back = s.querySelector('.back');
+    var next = s.querySelector('.next');
+    var skip = s.querySelector('.skip');
+    if (back) { back.addEventListener('click', function () { go(-1); }); }
+    if (next) {
+      next.addEventListener('click', function () {
+        if (s.getAttribute('data-step') === 'verify') { skippedVerify = false; }
+        go(1);
+      });
+    }
+    if (skip) {
+      skip.addEventListener('click', function () {
+        if (s.getAttribute('data-step') === 'verify') { skippedVerify = true; }
+        go(1);
+      });
+    }
+  });
+
+  document.querySelectorAll('input[type="radio"]').forEach(function (r) { r.addEventListener('change', render); });
+
+  document.querySelectorAll('.copy').forEach(function (button) {
+    if (!navigator.clipboard) { return; }
+    button.hidden = false;
+    button.addEventListener('click', function () {
+      var text = button.parentNode.querySelector('pre').textContent;
+      navigator.clipboard.writeText(text).then(function () {
+        button.textContent = 'Copied';
+        setTimeout(function () { button.textContent = 'Copy'; }, 1500);
+      });
+    });
+  });
+
+  var guess = document.querySelector('input[name="platform"][value="' + detectPlatform() + '"]');
+  if (guess) { guess.checked = true; }
+  render();
+}());
+</script>
+</body>
+</html>

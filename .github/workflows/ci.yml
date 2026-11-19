@@ -1,0 +1,103 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    name: Windows PowerShell 5.1
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: powershell
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Pester 5
+        run: Install-Module Pester -MinimumVersion 5.5.0 -Force -SkipPublisherCheck -Scope CurrentUser
+
+      - name: Pester tests
+        run: |
+          Import-Module Pester -MinimumVersion 5.5.0
+          $c = New-PesterConfiguration
+          $c.Run.Path = 'tests/powershell'
+          $c.Run.Exit = $true
+          $c.Output.Verbosity = 'Detailed'
+          Invoke-Pester -Configuration $c
+
+      - name: Guide page commands match the README
+        run: ./tests/check-guide-commands.ps1
+
+      - name: Preview runs and changes nothing
+        run: |
+          powershell -NoProfile -ExecutionPolicy Bypass -File scripts/onboard.ps1 -Agent both -WhatIf | Tee-Object -Variable out
+          if ($LASTEXITCODE -gt 1) { throw "preview exited with $LASTEXITCODE" }
+          if (-not (($out -join "`n") -match 'Preview only: nothing was changed.')) { throw 'preview did not finish' }
+
+      - name: Missing agent is a usage error
+        run: |
+          powershell -NoProfile -ExecutionPolicy Bypass -File scripts/onboard.ps1
+          if ($LASTEXITCODE -ne 2) { throw "expected exit code 2, got $LASTEXITCODE" }
+          $global:LASTEXITCODE = 0
+
+  unix:
+    name: bash on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      # /bin/bash is bash 3.2 on macOS, the oldest bash the script supports.
+      - name: bash tests
+        run: /bin/bash tests/bash/test_onboard.sh
+
+      - name: Preview runs and changes nothing
+        run: |
+          set +e
+          out=$(/bin/bash scripts/onboard.sh --agent both --dry-run 2>&1)
+          code=$?
+          printf '%s\n' "$out"
+          [ "$code" -le 1 ] || { echo "preview exited with $code"; exit 1; }
+          case "$out" in *"Preview only: nothing was changed."*) ;; *) echo "preview did not finish"; exit 1 ;; esac
+
+      - name: Missing agent is a usage error
+        run: |
+          set +e
+          /bin/bash scripts/onboard.sh
+          [ $? -eq 2 ]
+
+  lint:
+    name: shellcheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: shellcheck -x scripts/onboard.sh tests/bash/test_onboard.sh
+
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install gitleaks
+        run: |
+          v=8.21.2
+          cd "$RUNNER_TEMP"
+          curl -fsSLO "https://github.com/gitleaks/gitleaks/releases/download/v$v/gitleaks_${v}_linux_x64.tar.gz"
+          curl -fsSLO "https://github.com/gitleaks/gitleaks/releases/download/v$v/gitleaks_${v}_checksums.txt"
+          grep " gitleaks_${v}_linux_x64.tar.gz$" "gitleaks_${v}_checksums.txt" | sha256sum -c -
+          tar -xzf "gitleaks_${v}_linux_x64.tar.gz" gitleaks
+      - name: Scan every commit
+        run: '"$RUNNER_TEMP/gitleaks" git --redact --verbose .'
+      - name: Scan the files as checked out
+        run: '"$RUNNER_TEMP/gitleaks" dir --redact --verbose .'

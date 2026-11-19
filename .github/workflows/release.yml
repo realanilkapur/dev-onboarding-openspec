@@ -1,0 +1,36 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  release:
+    needs: ci
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build release files
+        run: |
+          mkdir dist
+          cp scripts/onboard.ps1 scripts/onboard.sh dist/
+          cd dist
+          sha256sum onboard.ps1 onboard.sh > SHA256SUMS
+          cat SHA256SUMS
+
+      - name: Check the checksums
+        run: cd dist && sha256sum -c SHA256SUMS
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/onboard.ps1 dist/onboard.sh dist/SHA256SUMS --title "$GITHUB_REF_NAME" --generate-notes --verify-tag
