@@ -201,7 +201,7 @@ The only `claude` and `codex` commands the scripts run are `--version`. Neither 
 
 - The repository is public: `realanilkapur/dev-onboarding-openspec`.
 - `ci.yml` runs on pushes to `main`, pull requests, and when called by the release workflow:
-  - Pester tests on Windows PowerShell 5.1 (`windows-latest`), and the bash tests with `/bin/bash` on `ubuntu-latest` and `macos-latest` (bash 3.2).
+  - Pester tests on Windows PowerShell 5.1 (`windows-latest`), and the bash tests with `/bin/bash` on `ubuntu-latest` and `macos-15-intel` (bash 3.2; the arm64 macOS runners were not picking up jobs due to GitHub capacity limits).
   - A preview run of each script, and a usage-error check.
   - shellcheck, and the guide command check.
   - gitleaks, a pinned release binary checked against its published checksum, over every commit and over the checked-out files.

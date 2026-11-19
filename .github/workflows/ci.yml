@@ -52,7 +52,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        # macOS arm64 hosted runners were failing to pick up jobs (capacity limits).
+        os: [ubuntu-latest, macos-15-intel]
     steps:
       - uses: actions/checkout@v4
 
