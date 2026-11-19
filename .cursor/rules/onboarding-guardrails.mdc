@@ -1,0 +1,8 @@
+---
+description: Safety guardrails for local machine environment setup
+alwaysApply: true
+---
+- NEVER modify `~/.gitconfig`, `~/.zshrc`, `~/.bashrc`, or `~/.claude/settings.json` without creating a `.bak` backup first.
+- NEVER run `sudo` or Windows Admin elevation commands without pausing and asking the user.
+- NEVER write API keys or tokens into tracked repository files.
+- ALWAYS detect the host OS (`$IsWindows` / `uname -s`) before suggesting or running package manager commands (`winget` vs `brew`).
