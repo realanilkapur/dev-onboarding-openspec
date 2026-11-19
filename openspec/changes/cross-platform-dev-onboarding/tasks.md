@@ -78,9 +78,9 @@
 - [x] 10.6 Add a gitleaks scan (pinned binary, checksum-verified) over every commit and the checked-out files to CI, and make a finding fail the build
 - [x] 10.7 Install the local, uncommitted `pre-push` hook with its private denylist on each machine that publishes, and confirm it blocks a test push containing a denylisted term
 - [x] 10.8 Add a release workflow for `v*` tags that runs the tests and the scan, writes `SHA256SUMS`, and publishes `onboard.ps1`, `onboard.sh`, and `SHA256SUMS`
-- [ ] 10.9 After the specs are reviewed, create the public repository `realanilkapur/dev-onboarding-openspec` with the `realanilkapur` account, and push
-- [ ] 10.10 Enable GitHub Pages from `docs/`, link the guide from the README, and walk through every step of the page
-- [ ] 10.11 Tag `v0.1.0`, then run the README's commands as written from an empty folder on Windows, macOS, and Linux and confirm the downloads, checksums, and previews work
+- [x] 10.9 After the specs are reviewed, create the public repository `realanilkapur/dev-onboarding-openspec` with the `realanilkapur` account, and push
+- [x] 10.10 Enable GitHub Pages from `docs/`, link the guide from the README, and walk through every step of the page
+- [ ] 10.11 Tag `v0.1.0`, then run the README's commands as written from an empty folder on Windows, macOS, and Linux and confirm the downloads, checksums, and previews work (tagged and checked on Windows; macOS and Linux still to do)
 
 ## 11. End-to-end checks
 
