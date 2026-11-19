@@ -2,7 +2,7 @@
 # Tests for scripts/onboard.sh. Each test runs in a subshell with stubbed commands,
 # so nothing is installed and no real startup file is touched.
 # Stubs are functions and variables the sourced script reads, which shellcheck cannot see.
-# shellcheck source-path=SCRIPTDIR disable=SC2317,SC2034,SC2030,SC2031
+# shellcheck source-path=SCRIPTDIR disable=SC2317,SC2329,SC2034,SC2030,SC2031
 
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
 SCRIPT="$ROOT/scripts/onboard.sh"
